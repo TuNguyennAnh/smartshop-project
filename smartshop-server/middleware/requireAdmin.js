@@ -9,4 +9,4 @@ router.get("/", authenticate, requireAdmin, async (req, res) => {
   res.json(users);
 });
 
-module.exports = router; // ✅ Đừng quên dòng này!
+module.exports = requireAdmin; // ✅ Đừng quên dòng này!
