@@ -1,83 +1,105 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <title>Dashboard</title>
+  <meta charset="UTF-8">
+  <title>SmartShop - Dashboard</title>
   <style>
     body {
-      font-family: sans-serif;
-      background: #fff3e0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f4f4;
+      margin: 0;
       padding: 30px;
     }
-    .card {
-      background: #ffe0b2;
-      padding: 20px;
-      border-radius: 10px;
-      margin: 20px 0;
+
+    h1 {
+      color: #333;
+    }
+
+    #userList {
+      margin-top: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background: #f9c66c;
+    }
+
+    .logout {
+      float: right;
+      background: #e67e22;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .logout:hover {
+      background: #cf711c;
     }
   </style>
 </head>
 <body>
-  <h2>Xin chào, <span id="username">...</span></h2>
-  <div class="card">
-    <p>Doanh thu hôm nay: <strong id="revenue">...</strong> đ</p>
-    <p>Lợi nhuận: <strong id="profit">...</strong> đ</p>
-    <p>Số đơn: <strong id="orders">...</strong></p>
-  </div>
-  <div id="admin-section" style="display: none; margin-top: 20px;">
-    <h3>🔒 Khu vực quản lý tài khoản</h3>
-    <a href="manage-users.html">Xem danh sách tài khoản</a>
-  </div>  
+
+  <button class="logout" onclick="logout()">Đăng xuất</button>
+  <h1>Chào mừng đến với SmartShop!</h1>
+  <div id="userInfo">Đang tải thông tin người dùng...</div>
+  <div id="userList"></div>
 
   <script>
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
-      alert('Vui lòng đăng nhập');
-      window.location.href = 'login.html';
+      window.location.href = "index.html";
     }
 
-    fetch('http://localhost:5000/api/dashboard', {
-      headers: { Authorization: 'Bearer ' + token }
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.username) {
-        document.getElementById('username').textContent = data.username;
-        document.getElementById('revenue').textContent = data.revenueToday.toLocaleString();
-        document.getElementById('profit').textContent = data.profit.toLocaleString();
-        document.getElementById('orders').textContent = data.orders;
-      } else {
-        alert('Không lấy được thông tin dashboard');
-      }
-    })
-    .catch(err => {
-      alert('Có lỗi khi lấy dữ liệu');
-      console.error(err);
-    });
-  </script>
-  <script>
-    async function checkAdminRole() {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-  
+    async function fetchUserData() {
       try {
-        const res = await fetch("http://localhost:5000/api/users", {
-          method: "GET",
-          headers: {
-            "Authorization": token
-          }
+        const res = await fetch("https://smartshop-project.onrender.com/", {
+          headers: { Authorization: `Bearer ${token}` }
         });
-  
-        if (res.status === 200) {
-          // ✅ Là admin → hiện menu admin
-          document.getElementById("admin-section").style.display = "block";
+
+        const data = await res.json();
+
+        const container = document.getElementById("userList");
+        const info = document.getElementById("userInfo");
+
+        if (res.status === 200 && Array.isArray(data)) {
+          info.textContent = "🔐 Bạn đang đăng nhập với quyền quản trị (Admin)";
+          let table = "<h2>Danh sách người dùng</h2><table><tr><th>Tên đăng nhập</th><th>Vai trò</th></tr>";
+          data.forEach(user => {
+            table += `<tr><td>${user.username}</td><td>${user.role}</td></tr>`;
+          });
+          table += "</table>";
+          container.innerHTML = table;
+        } else if (data?.username) {
+          info.innerHTML = `👤 Xin chào <strong>${data.username}</strong> (Role: ${data.role})`;
+          container.innerHTML = `<p>Không có quyền xem danh sách tài khoản.</p>`;
+        } else {
+          throw new Error();
         }
       } catch (err) {
-        console.error("Không phải admin hoặc lỗi:", err);
+        localStorage.removeItem("token");
+        window.location.href = "index.html";
       }
     }
-  
-    checkAdminRole(); // Gọi khi trang dashboard tải
-  </script>  
+
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "index.html";
+    }
+
+    fetchUserData();
+  </script>
 </body>
 </html>
