@@ -152,6 +152,22 @@
         messageDiv.style.color = "green";
         messageDiv.textContent = "Đăng nhập thành công!";
          
+        if (res.ok && data.token) {
+  localStorage.setItem("token", data.token);
+  msg.style.color = "green";
+  msg.textContent = "✅ Đăng nhập thành công!";
+  
+  // Phân trang theo vai trò
+  setTimeout(() => {
+    if (data.role === 'admin') {
+      window.location.href = "manage-users.html"; // admin vào trang quản lý
+    } else {
+      window.location.href = "dashboard.html"; // người dùng vào dashboard thường
+    }
+  }, 1000);
+}
+        
+
         setTimeout(() => {
           window.location.href = "dashboard.html";
         }, 1000);
