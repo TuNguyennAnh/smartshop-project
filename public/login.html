@@ -2,72 +2,133 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Đăng nhập - SmartShop</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng nhập SmartShop</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #4f46e5, #3b82f6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .login-container {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .login-container h2 {
+      text-align: center;
+      margin-bottom: 24px;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .message {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .link {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .link a {
+      color: #4f46e5;
+      text-decoration: none;
+    }
+  </style>
 </head>
 <body>
   <div class="login-container">
-    <form id="loginForm">
-      <h2>Đăng nhập SmartShop</h2>
-
-      <label for="username">Tên đăng nhập</label>
-      <input type="text" id="username" name="username" required placeholder="admin hoặc user..." />
-
-      <label for="password">Mật khẩu</label>
-      <input type="password" id="password" name="password" required placeholder="Mật khẩu..." />
-
-      <button type="submit">Đăng nhập</button>
-
-      <div id="message" style="margin-top: 10px; font-weight: bold;"></div>
-
-      <p>Chưa có tài khoản? <a href="register.html">Đăng ký ngay</a></p>
-    </form>
+    <h2>Đăng nhập SmartShop</h2>
+    <input type="text" id="username" placeholder="Tên đăng nhập" required />
+    <input type="password" id="password" placeholder="Mật khẩu" required />
+    <button onclick="login()">Đăng nhập</button>
+    <div id="message" class="message"></div>
+    <div class="link">
+      Chưa có tài khoản? <a href="register.html">Đăng ký</a>
+    </div>
   </div>
 
   <script>
-    const form = document.getElementById("loginForm");
-    const messageDiv = document.getElementById("message");
+    async function login() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const msg = document.getElementById("message");
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const username = form.username.value.trim();
-      const password = form.password.value.trim();
+      if (!username || !password) {
+        msg.textContent = "Vui lòng nhập đầy đủ thông tin.";
+        msg.style.color = "red";
+        return;
+      }
 
       try {
         const res = await fetch("https://smartshop-project.onrender.com/api/auth/login", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ username, password }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password })
         });
 
         const data = await res.json();
 
-if (res.ok && data.token) {
-  localStorage.setItem("token", data.token);
-  msg.style.color = "green";
-  msg.textContent = "✅ Đăng nhập thành công!";
+        if (!res.ok) {
+          msg.textContent = data.msg || "Đăng nhập thất bại.";
+          msg.style.color = "red";
+          return;
+        }
 
-  // Gọi API để kiểm tra role
-  const userRes = await fetch("https://smartshop-server.onrender.com/api/users/me", {
-    headers: {
-      Authorization: "Bearer " + data.token
+        // Lưu token và hiển thị thông báo
+        localStorage.setItem("token", data.token);
+        msg.textContent = "✅ Đăng nhập thành công!";
+        msg.style.color = "green";
+
+        // Gọi API để lấy role
+        const userRes = await fetch("https://smartshop-project.onrender.com/api/users/me", {
+          headers: {
+            Authorization: "Bearer " + data.token
+          }
+        });
+
+        const userData = await userRes.json();
+
+        if (userData.role === "admin") {
+          window.location.href = "manage-users.html";
+        } else {
+          window.location.href = "dashboard.html";
+        }
+      } catch (error) {
+        msg.textContent = "Lỗi kết nối đến máy chủ.";
+        msg.style.color = "red";
+      }
     }
-  });
-  const userData = await userRes.json();
-
-  if (userData.role === "admin") {
-    window.location.href = "manage-users.html";
-  } else {
-    window.location.href = "dashboard.html";
-  }
-} else {
-  msg.style.color = "red";
-  msg.textContent = "❌ Đăng nhập thất bại!";
-}
-
   </script>
 </body>
 </html>
