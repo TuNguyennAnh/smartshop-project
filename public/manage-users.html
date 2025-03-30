@@ -2,65 +2,109 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <title>Quản lý tài khoản</title>
+  <title>Quản Lý Người Dùng</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #fff6e6;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 0;
     }
+
+    header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 15px 30px;
+      text-align: center;
+    }
+
+    .container {
+      padding: 30px;
+    }
+
     h2 {
-      color: #c0392b;
+      text-align: center;
+      color: #2c3e50;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 15px;
+      margin-top: 20px;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
+
     th, td {
+      padding: 12px;
       border: 1px solid #ccc;
-      padding: 10px;
       text-align: left;
     }
+
     th {
-      background-color: #f39c12;
+      background-color: #34495e;
       color: white;
     }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .error, .success {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    .error { color: red; }
+    .success { color: green; }
   </style>
 </head>
 <body>
-  <h2>Quản Lý Tài Khoản Người Dùng</h2>
-  <table id="usersTable">
-    <thead>
-      <tr>
-        <th>Tên đăng nhập</th>
-        <th>Quyền</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <header>
+    <h1>SmartShop Admin Panel</h1>
+  </header>
+  <div class="container">
+    <h2>Danh sách người dùng</h2>
+    <div id="msg" class="error"></div>
+    <table id="usersTable" style="display: none;">
+      <thead>
+        <tr>
+          <th>Tên người dùng</th>
+          <th>Vai trò</th>
+        </tr>
+      </thead>
+      <tbody id="userList"></tbody>
+    </table>
+  </div>
 
   <script>
     async function loadUsers() {
-      const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/api/users", {
-        headers: {
-          Authorization: token
-        }
-      });
-
-      if (res.status === 403) {
-        alert("Bạn không có quyền truy cập trang này!");
+      const token = localStorage.getItem('token');
+      if (!token) {
+        document.getElementById('msg').textContent = "Bạn chưa đăng nhập.";
         return;
       }
 
-      const users = await res.json();
-      const tbody = document.querySelector("#usersTable tbody");
-      users.forEach(user => {
-        const row = document.createElement("tr");
-        row.innerHTML = `<td>${user.username}</td><td>${user.role}</td>`;
-        tbody.appendChild(row);
-      });
+      try {
+        const res = await fetch("https://smartshop-server.onrender.com/api/users", {
+          headers: { Authorization: "Bearer " + token },
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Lỗi không xác định");
+
+        const tbody = document.getElementById("userList");
+        data.forEach(user => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td>${user.username}</td><td>${user.role}</td>`;
+          tbody.appendChild(tr);
+        });
+
+        document.getElementById("usersTable").style.display = "table";
+      } catch (err) {
+        document.getElementById("msg").textContent = "❌ " + err.message;
+      }
     }
 
     loadUsers();
