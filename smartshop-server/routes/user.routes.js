@@ -1,7 +1,8 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const User = require('../models/User');
-const verifyAdmin = require('../middleware/verifyAdmin'); // ✅ middleware kiểm tra quyền admin
+const User = require("../models/User");
+const verifyToken = require("../middleware/verifyToken"); // 👈 Bổ sung dòng này
+const requireAdmin = require("../middleware/requireAdmin"); // Nếu bạn dùng phân quyền admin
 
 // Chỉ admin được xem danh sách user
 router.get('/me', verifyToken, async (req, res) => {
