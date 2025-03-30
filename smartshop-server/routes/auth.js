@@ -32,7 +32,7 @@ router.post('/login', async (req, res) => {
     if (!isMatch) return res.status(400).json({ msg: 'Sai mật khẩu' });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '2h' });
-    res.json({ msg: 'Đăng nhập thành công', token });
+    res.json({ msg: 'Đăng nhập thành công', token, role: user.role });
   } catch (err) {
     res.status(500).json({ msg: 'Lỗi server' });
   }
