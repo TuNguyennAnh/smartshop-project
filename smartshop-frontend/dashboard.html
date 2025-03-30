@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #fff3e0;
+      padding: 30px;
+    }
+    .card {
+      background: #ffe0b2;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <h2>Xin chào, <span id="username">...</span></h2>
+  <div class="card">
+    <p>Doanh thu hôm nay: <strong id="revenue">...</strong> đ</p>
+    <p>Lợi nhuận: <strong id="profit">...</strong> đ</p>
+    <p>Số đơn: <strong id="orders">...</strong></p>
+  </div>
+  <div id="admin-section" style="display: none; margin-top: 20px;">
+    <h3>🔒 Khu vực quản lý tài khoản</h3>
+    <a href="manage-users.html">Xem danh sách tài khoản</a>
+  </div>  
+
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Vui lòng đăng nhập');
+      window.location.href = 'login.html';
+    }
+
+    fetch('http://localhost:5000/api/dashboard', {
+      headers: { Authorization: 'Bearer ' + token }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.username) {
+        document.getElementById('username').textContent = data.username;
+        document.getElementById('revenue').textContent = data.revenueToday.toLocaleString();
+        document.getElementById('profit').textContent = data.profit.toLocaleString();
+        document.getElementById('orders').textContent = data.orders;
+      } else {
+        alert('Không lấy được thông tin dashboard');
+      }
+    })
+    .catch(err => {
+      alert('Có lỗi khi lấy dữ liệu');
+      console.error(err);
+    });
+  </script>
+  <script>
+    async function checkAdminRole() {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+  
+      try {
+        const res = await fetch("http://localhost:5000/api/users", {
+          method: "GET",
+          headers: {
+            "Authorization": token
+          }
+        });
+  
+        if (res.status === 200) {
+          // ✅ Là admin → hiện menu admin
+          document.getElementById("admin-section").style.display = "block";
+        }
+      } catch (err) {
+        console.error("Không phải admin hoặc lỗi:", err);
+      }
+    }
+  
+    checkAdminRole(); // Gọi khi trang dashboard tải
+  </script>  
+</body>
+</html>

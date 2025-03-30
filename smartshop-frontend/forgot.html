@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Đổi Mật Khẩu</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #fdf6e3;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .change-password-box {
+      background: #ffccaa;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      width: 300px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #e67e22;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="change-password-box">
+    <h3>Đổi Mật Khẩu</h3>
+    <input type="text" id="username" placeholder="Tên đăng nhập">
+    <input type="password" id="oldPassword" placeholder="Mật khẩu cũ">
+    <input type="password" id="newPassword" placeholder="Mật khẩu mới">
+    <button onclick="changePassword()">Đổi mật khẩu</button>
+    <p id="msg"></p>
+  </div>
+
+  <script>
+    async function changePassword() {
+      const username = document.getElementById('username').value;
+      const oldPassword = document.getElementById('oldPassword').value;
+      const newPassword = document.getElementById('newPassword').value;
+
+      const res = await fetch('http://localhost:5000/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, oldPassword, newPassword })
+      });
+
+      const data = await res.json();
+      document.getElementById('msg').innerText = data.message;
+
+      if (res.ok) {
+        // Redirect to login page or home page
+        // location.href = "/login.html";
+      }
+    }
+  </script>
+</body>
+</html>

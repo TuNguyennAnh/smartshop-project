@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Đăng Ký</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fff7e6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .register-box {
+      background: #ffe0b2;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      width: 300px;
+    }
+    h3 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #ff9800;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #msg {
+      color: red;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="register-box">
+    <h3>Đăng Ký</h3>
+    <form id="registerForm">
+      <input type="text" id="username" placeholder="Tên đăng nhập" required />
+      <input type="password" id="password" placeholder="Mật khẩu" required />
+      <button type="submit">Tạo Tài Khoản</button>
+    </form>
+    <p id="msg"></p>
+  </div>
+
+  <script>
+    document.getElementById("registerForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      const res = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+      const msg = document.getElementById("msg");
+
+      if (res.ok) {
+        msg.style.color = "green";
+        msg.innerText = "✅ Đăng ký thành công!";
+        setTimeout(() => location.href = "login.html", 1000);
+      } else {
+        msg.style.color = "red";
+        msg.innerText = "❌ " + (data.message || "Đăng ký thất bại");
+      }
+    });
+  </script>
+</body>
+</html>
