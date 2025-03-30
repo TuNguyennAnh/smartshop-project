@@ -1,119 +1,162 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Đăng Nhập</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SmartShop Login</title>
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: #fef6dc;
+    * {
+      box-sizing: border-box;
       font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    }
+
+    body {
+      background: linear-gradient(135deg, #4f46e5, #3b82f6);
       height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
     }
 
     .login-box {
-      background: #ffcaa6;
-      padding: 40px 30px;
-      border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-      width: 360px;
-      text-align: center;
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     }
 
-    .login-box h2 {
-      margin-bottom: 20px;
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
       color: #333;
     }
 
-    .login-box input {
-      width: 100%;
-      padding: 12px;
-      margin: 12px 0;
-      border: none;
-      border-radius: 6px;
-      font-size: 15px;
+    .form-group {
+      margin-bottom: 20px;
     }
 
-    .login-box button {
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #555;
+    }
+
+    input[type="text"],
+    input[type="password"] {
       width: 100%;
       padding: 12px;
-      background: #e67e22;
-      border: none;
+      border: 1px solid #ccc;
       border-radius: 6px;
+      outline: none;
+      transition: border 0.3s ease;
+    }
+
+    input:focus {
+      border-color: #4f46e5;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background-color: #4f46e5;
+      border: none;
       color: white;
-      font-weight: bold;
       font-size: 16px;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: background 0.3s ease;
-    }
-
-    .login-box button:hover {
-      background: #cf711c;
-    }
-
-    #msg {
-      margin-top: 15px;
       font-weight: bold;
-      font-size: 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
     }
 
-    .links {
-      display: flex;
-      justify-content: space-between;
-      font-size: 14px;
-      margin-top: 10px;
+    .btn:hover {
+      background-color: #4338ca;
     }
 
-    .links a {
-      color: #e67e22;
+    .message {
+      margin-top: 15px;
+      text-align: center;
+      color: red;
+      font-weight: bold;
+    }
+
+    .register-link {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .register-link a {
+      color: #4f46e5;
       text-decoration: none;
+      font-weight: bold;
     }
 
+    .register-link a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
-  <form id="loginForm" class="login-box">
-    <h2>Đăng Nhập</h2>
-    <input type="text" id="username" placeholder="Tên đăng nhập" required />
-    <input type="password" id="password" placeholder="Mật khẩu" required />
-    <button type="submit">Đăng nhập</button>
-    <p id="msg"></p>
-
-    <div class="links">
-      <a href="register.html">Đăng ký</a>
-      <a href="forgot.html">Quên mật khẩu?</a>
+  <div class="login-box">
+    <h2>Đăng nhập SmartShop</h2>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username">Tên đăng nhập</label>
+        <input type="text" id="username" required />
+      </div>
+      <div class="form-group">
+        <label for="password">Mật khẩu</label>
+        <input type="password" id="password" required />
+      </div>
+      <button type="submit" class="btn">Đăng nhập</button>
+      <div class="message" id="message"></div>
+    </form>
+    <div class="register-link">
+      Chưa có tài khoản? <a href="register.html">Đăng ký ngay</a>
     </div>
-  </form>
+  </div>
 
   <script>
-    document.getElementById("loginForm").addEventListener("submit", async function (e) {
+    const form = document.getElementById("loginForm");
+    const messageDiv = document.getElementById("message");
+
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
-
       const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
+      const password = document.getElementById("password").value;
 
-      const res = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
+      messageDiv.textContent = "";
 
-      const data = await res.json();
-      const msg = document.getElementById("msg");
+      if (!username || !password) {
+        messageDiv.textContent = "Vui lòng nhập đầy đủ thông tin.";
+        return;
+      }
 
-      if (res.ok && data.token) {
+      try {
+        const res = await fetch("https://smartshop-project.onrender.com/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          messageDiv.textContent = data.message || "Đăng nhập thất bại!";
+          return;
+        }
+
         localStorage.setItem("token", data.token);
-        msg.style.color = "green";
-        msg.textContent = "✅ Đăng nhập thành công!";
-        setTimeout(() => window.location.href = "dashboard.html", 1000);
-      } else {
-        msg.style.color = "red";
-        msg.textContent = "❌ Sai tài khoản hoặc mật khẩu!";
+        messageDiv.style.color = "green";
+        messageDiv.textContent = "Đăng nhập thành công!";
+
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 1000);
+      } catch (err) {
+        messageDiv.textContent = "Lỗi kết nối đến máy chủ.";
       }
     });
   </script>
