@@ -1,5 +1,3 @@
-// middleware/verifyAdmin.js
-
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
@@ -14,7 +12,7 @@ module.exports = async function (req, res, next) {
       return res.status(403).json({ message: "Access denied. Admin only." });
     }
 
-    req.user = user; // Gắn user đã xác minh vào req
+    req.user = user;
     next();
   } catch (err) {
     res.status(403).json({ message: "Token invalid or expired" });
