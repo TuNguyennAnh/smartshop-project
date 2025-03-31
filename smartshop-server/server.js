@@ -10,7 +10,7 @@ const statsRoutes = require('./routes/stats');
 const userRoutes = require('./routes/user.routes');
 const authRoutes = require('./routes/auth.routes');
 
-
+// Load env variables
 dotenv.config();
 
 const app = express();
@@ -29,7 +29,7 @@ app.use('/api/stats', statsRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 
-// MongoDB
+// MongoDB Connection
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI, {
@@ -39,9 +39,11 @@ const connectDB = async () => {
     console.log("✅ Kết nối MongoDB thành công");
   } catch (err) {
     console.error("❌ MongoDB error:", err);
-    process.exit(1); // Thoát nếu không kết nối được
+    process.exit(1);
   }
 };
+
+// Connect to MongoDB
 connectDB();
 
 // Error handling middleware
@@ -50,7 +52,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Đã xảy ra lỗi trên server" });
 });
 
-// Khởi động server
+// Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server đang chạy tại http://localhost:${PORT}`);
 });
