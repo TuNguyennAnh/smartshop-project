@@ -3,7 +3,7 @@ const Product = require('../models/Product');
 // Thêm sản phẩm mới
 exports.createProduct = async (req, res) => {
   try {
-    const product = new Product(req.body);
+    const product = new Product({ ...req.body, shopId: req.user.id }); // Gắn shopId từ token
     await product.save();
     res.status(201).json(product);
   } catch (err) {
@@ -11,27 +11,33 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-// Lấy toàn bộ sản phẩm
+// Lấy toàn bộ sản phẩm của shop hiện tại
 exports.getProducts = async (req, res) => {
-  const products = await Product.find();
+  const products = await Product.find({ shopId: req.user.id });
   res.json(products);
 };
 
 // Lấy chi tiết sản phẩm
 exports.getProductById = async (req, res) => {
-  const product = await Product.findById(req.params.id);
+  const product = await Product.findOne({ _id: req.params.id, shopId: req.user.id });
   if (!product) return res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
   res.json(product);
 };
 
 // Cập nhật sản phẩm
 exports.updateProduct = async (req, res) => {
-  const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+  const product = await Product.findOneAndUpdate(
+    { _id: req.params.id, shopId: req.user.id },
+    req.body,
+    { new: true }
+  );
+  if (!product) return res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
   res.json(product);
 };
 
 // Xóa sản phẩm
 exports.deleteProduct = async (req, res) => {
-  await Product.findByIdAndDelete(req.params.id);
+  const product = await Product.findOneAndDelete({ _id: req.params.id, shopId: req.user.id });
+  if (!product) return res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
   res.json({ message: 'Đã xóa sản phẩm' });
 };

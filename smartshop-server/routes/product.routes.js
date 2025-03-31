@@ -3,7 +3,7 @@ const router = express.Router();
 const productController = require('../controllers/product.controller');
 const verifyToken = require('../middleware/verifyToken');
 
-// Bảo vệ tất cả route sản phẩm
+// Áp dụng verifyToken cho tất cả route
 router.use(verifyToken);
 
 router.post('/', productController.createProduct);
