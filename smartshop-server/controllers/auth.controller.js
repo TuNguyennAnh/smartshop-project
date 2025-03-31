@@ -41,32 +41,30 @@ const register = async (req, res) => {
 // Đăng nhập tài khoản
 const login = async (req, res) => {
   try {
+    console.log("Đang xử lý đăng nhập...");
     const { username, password } = req.body;
 
-    // Tìm user theo username và populate thông tin shop
     const user = await User.findOne({ username }).populate("shop");
     if (!user) {
       return res.status(404).json({ message: "Tài khoản không tồn tại" });
     }
 
-    // So sánh mật khẩu
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: "Sai mật khẩu" });
     }
 
-    // Tạo JWT token với thêm thông tin shop
     const token = jwt.sign(
       {
         id: user._id,
         role: user.role,
-        shop: user.shop?._id, // Thêm ID của shop vào token
+        shop: user.shop?._id,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" } // Giảm thời gian hết hạn xuống 1 ngày
+      { expiresIn: "1d" }
     );
 
-    // Trả về token và thông tin người dùng cùng với shop
+    console.log("Đăng nhập thành công!");
     res.json({
       message: "Đăng nhập thành công",
       token,
@@ -74,7 +72,7 @@ const login = async (req, res) => {
         id: user._id,
         username: user.username,
         role: user.role,
-        shop: user.shop, // Trả về thông tin shop đầy đủ
+        shop: user.shop,
       },
     });
   } catch (err) {
