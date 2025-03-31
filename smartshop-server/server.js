@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path");
+
 const productRoutes = require('./routes/product.routes');
 const inventoryRoutes = require('./routes/inventory');
 const orderRoutes = require('./routes/order');
@@ -16,7 +17,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// CORS middleware
+// CORS Config
 const corsOptions = {
   origin: "https://smartshop-frontend.onrender.com",
   methods: "GET,POST,PUT,DELETE,PATCH,OPTIONS",
@@ -24,7 +25,9 @@ const corsOptions = {
   credentials: true,
 };
 
-app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // Cho phép preflight
+app.use(cors(corsOptions));          // Dùng middleware chính
+
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../public")));
 
@@ -36,12 +39,10 @@ app.use('/api/stats', statsRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 
-// Kiểm tra nếu không có route nào khớp -> trả về 404
+// Nếu không khớp route nào
 app.use((req, res) => {
   res.status(404).json({ message: "Route không tồn tại!" });
 });
-
-app.options("*", cors(corsOptions)); // Cho phép preflight OPTIONS
 
 // MongoDB Connection
 const connectDB = async () => {
@@ -56,17 +57,15 @@ const connectDB = async () => {
     process.exit(1);
   }
 };
-
-// Connect to MongoDB
 connectDB();
 
-// Error handling middleware
+// Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: "Đã xảy ra lỗi trên server" });
 });
 
-// Start server
+// Start
 app.listen(PORT, () => {
   console.log(`🚀 Server đang chạy tại http://localhost:${PORT}`);
 });
