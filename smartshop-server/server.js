@@ -18,7 +18,8 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: "https://smartshop-frontend.onrender.com", // ✅ Cho phép frontend gọi API
+  origin: "https://smartshop-frontend.onrender.com",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true
 }));
 app.use(express.json());
