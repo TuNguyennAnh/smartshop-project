@@ -1,4 +1,4 @@
-const Order = require('../models/Order');
+const Order = require('../models/Oder');
 
 // Tổng doanh thu
 exports.getRevenue = async (req, res) => {
