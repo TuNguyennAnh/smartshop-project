@@ -1,7 +1,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-const cors = require("cors");
+const corsOptions = {
+  origin: "https://smartshop-frontend.onrender.com",
+  methods: "GET,POST,PUT,DELETE,PATCH,OPTIONS",
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+};
 const path = require("path");
 const productRoutes = require('./routes/product.routes');
 const inventoryRoutes = require('./routes/inventory');
@@ -23,18 +28,7 @@ app.use(cors({
   methods: "GET,POST,PUT,DELETE,PATCH,OPTIONS",
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://smartshop-frontend.onrender.com");
-  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,PATCH,OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.header("Access-Control-Allow-Credentials", "true");
-
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-
-  next();
-});
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../public")));
 
@@ -45,15 +39,13 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/stats', statsRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
-// Route đăng nhập
-app.post("/api/auth/login", (req, res) => {
-  res.json({ message: "Login thành công!" });
-});
 
 // Kiểm tra nếu không có route nào khớp -> trả về 404
 app.use((req, res) => {
   res.status(404).json({ message: "Route không tồn tại!" });
 });
+
+app.options("*", cors(corsOptions)); // Cho phép preflight OPTIONS
 
 // MongoDB Connection
 const connectDB = async () => {
