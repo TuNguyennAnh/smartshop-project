@@ -1,12 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const validateRegister = require("../middleware/validateRegister");
-const { register, login } = require("../controllers/auth.controller"); // Thêm login vào đây
+const { login, register } = require("../controllers/auth.controller");
 
-// API đăng ký và đăng nhập
-router.post("/register", validateRegister, register);
-router.post("/login", (req, res) => {
-    res.json({ message: "Login thành công!" });
-  });
-  
+router.post("/login", login);   // ✅ Phải có dòng này
+router.post("/register", register);
+
 module.exports = router;
