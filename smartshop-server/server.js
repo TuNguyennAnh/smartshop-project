@@ -39,11 +39,6 @@ app.use('/api/stats', statsRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 
-// Route fallback 404
-app.use((req, res) => {
-  res.status(404).json({ message: "Route không tồn tại!" });
-});
-
 // MongoDB
 const connectDB = async () => {
   try {
