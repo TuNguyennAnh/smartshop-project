@@ -1,29 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Đăng ký - SmartShop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng ký SmartShop</title>
   <style>
     body {
-      background: #f4f6f8;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #16a34a, #22c55e);
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       height: 100vh;
       margin: 0;
     }
 
-    .container {
-      background: #fff;
+    .register-container {
+      background: white;
       padding: 40px;
       border-radius: 12px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-      width: 350px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 400px;
     }
 
-    h2 {
+    .register-container h2 {
       text-align: center;
       margin-bottom: 24px;
       color: #333;
@@ -32,62 +33,45 @@
     input {
       width: 100%;
       padding: 12px;
-      margin-bottom: 16px;
-      border: 1px solid #ccc;
+      margin: 10px 0;
+      border: 1px solid #ddd;
       border-radius: 6px;
-      font-size: 14px;
     }
 
     button {
       width: 100%;
       padding: 12px;
-      background: #007bff;
+      background-color: #16a34a;
       color: white;
       border: none;
       border-radius: 6px;
-      font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
     }
 
-    button:hover {
-      background: #0056b3;
-    }
-
     .message {
+      margin-top: 15px;
       text-align: center;
-      margin-top: 16px;
-      font-size: 14px;
-    }
-
-    .message.error {
-      color: red;
-    }
-
-    .message.success {
-      color: green;
+      font-weight: bold;
     }
 
     .link {
       text-align: center;
-      margin-top: 12px;
+      margin-top: 10px;
     }
 
     .link a {
+      color: #16a34a;
       text-decoration: none;
-      color: #007bff;
-    }
-
-    .link a:hover {
-      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Tạo tài khoản</h2>
-    <input type="text" id="username" placeholder="Tên người dùng" required />
+  <div class="register-container">
+    <h2>Đăng ký SmartShop</h2>
+    <input type="text" id="username" placeholder="Tên đăng nhập" required />
     <input type="password" id="password" placeholder="Mật khẩu" required />
-    <input type="password" id="confirmPassword" placeholder="Xác nhận mật khẩu" required />
+    <input type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu" required />
     <button onclick="register()">Đăng ký</button>
     <div id="message" class="message"></div>
     <div class="link">
@@ -97,50 +81,47 @@
 
   <script>
     async function register() {
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
-      const confirmPassword = document.getElementById('confirmPassword').value;
-      const message = document.getElementById('message');
-
-      message.textContent = '';
-      message.className = 'message';
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const confirmPassword = document.getElementById("confirmPassword").value.trim();
+      const msg = document.getElementById("message");
 
       if (!username || !password || !confirmPassword) {
-        message.textContent = 'Vui lòng nhập đầy đủ thông tin.';
-        message.classList.add('error');
+        msg.textContent = "Vui lòng điền đầy đủ thông tin.";
+        msg.style.color = "red";
         return;
       }
 
       if (password !== confirmPassword) {
-        message.textContent = 'Mật khẩu xác nhận không khớp.';
-        message.classList.add('error');
+        msg.textContent = "Mật khẩu nhập lại không khớp.";
+        msg.style.color = "red";
         return;
       }
 
       try {
-        const res = await fetch('https://smartshop-server.onrender.com/api/auth/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+        const res = await fetch("https://smartshop-project.onrender.com/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, password })
         });
 
         const data = await res.json();
 
-        if (res.ok) {
-          message.textContent = 'Đăng ký thành công! Đang chuyển hướng...';
-          message.classList.add('success');
-          setTimeout(() => {
-            window.location.href = 'login.html';
-          }, 2000);
-        } else {
-          message.textContent = data.message || 'Đăng ký thất bại!';
-          message.classList.add('error');
+        if (!res.ok) {
+          msg.textContent = data.message || data.msg || "Đăng ký thất bại.";
+          msg.style.color = "red";
+          return;
         }
-      } catch (err) {
-        message.textContent = 'Lỗi máy chủ hoặc mạng. Thử lại sau.';
-        message.classList.add('error');
+
+        msg.textContent = "✅ Đăng ký thành công! Đang chuyển hướng...";
+        msg.style.color = "green";
+
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 1500);
+      } catch (error) {
+        msg.textContent = "Lỗi kết nối đến máy chủ.";
+        msg.style.color = "red";
       }
     }
   </script>
