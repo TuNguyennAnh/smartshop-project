@@ -19,6 +19,10 @@ const orderSchema = new mongoose.Schema({
     default: 'pending'
   },
   createdAt: { type: Date, default: Date.now },
+
+  paymentMethod: { type: String, enum: ['cash', 'bank', 'momo'], default: 'cash' },
+  paid: { type: Boolean, default: false },
+  
 });
 
 module.exports = mongoose.model('Order', orderSchema);
