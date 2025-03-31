@@ -102,8 +102,12 @@
         const res = await fetch("https://smartshop-project.onrender.com/api/auth/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password })
-        });
+          body: JSON.stringify({
+            username: document.getElementById("username").value,
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value
+        })
+      })
 
         const data = await res.json();
 
