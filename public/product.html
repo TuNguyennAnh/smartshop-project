@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quản lý sản phẩm</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <h1>🛒 Quản lý sản phẩm</h1>
+
+  <form id="productForm">
+    <input type="text" id="name" placeholder="Tên sản phẩm" required />
+    <input type="text" id="sku" placeholder="SKU (Mã sản phẩm)" required />
+    <input type="number" id="price" placeholder="Giá" required />
+    <input type="number" id="quantity" placeholder="Số lượng" required />
+    <input type="text" id="category" placeholder="Danh mục" />
+    <textarea id="description" placeholder="Mô tả"></textarea>
+    <button type="submit">➕ Thêm sản phẩm</button>
+  </form>
+
+  <hr />
+
+  <h2>📋 Danh sách sản phẩm</h2>
+  <table border="1" id="productTable">
+    <thead>
+      <tr>
+        <th>Tên</th>
+        <th>SKU</th>
+        <th>Giá</th>
+        <th>Số lượng</th>
+        <th>Danh mục</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script src="js/product.js"></script>
+</body>
+</html>
