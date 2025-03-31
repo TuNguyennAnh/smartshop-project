@@ -17,22 +17,19 @@ const userSchema = new mongoose.Schema({
 
   role: {
     type: String,
-    enum: ["admin", "owner", "staff"],
-    default: "owner", // Người đăng ký mặc định là chủ shop
+    enum: ["admin", "shop_owner", "employee"],
+    default: "shop_owner", // người đăng ký mới là chủ shop
   },
 
   shop: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Shop", // Liên kết đến shop mà người này thuộc về
-    required: function () {
-      return this.role !== "admin";
-    },
+    ref: "Shop",
   },
 
   createdAt: {
     type: Date,
     default: Date.now,
-  },
+  }
 });
 
 module.exports = mongoose.model("User", userSchema);

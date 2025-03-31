@@ -16,8 +16,8 @@ const productSchema = new mongoose.Schema({
 
   sku: {
     type: String,
-    required: true,
     unique: true,
+    required: true,
   },
 
   price: {
@@ -27,17 +27,19 @@ const productSchema = new mongoose.Schema({
 
   quantity: {
     type: Number,
+    required: true,
     default: 0,
   },
 
   description: {
     type: String,
+    default: "",
   },
 
   createdAt: {
     type: Date,
     default: Date.now,
-  },
+  }
 });
 
 module.exports = mongoose.model("Product", productSchema);
