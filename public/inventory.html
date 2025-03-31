@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quản lý kho</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <h1>🏬 Quản lý kho</h1>
+
+  <form id="inventoryForm">
+    <input type="text" id="sku" placeholder="SKU sản phẩm" required />
+    <input type="number" id="quantity" placeholder="Số lượng" required />
+    <select id="type">
+      <option value="import">➕ Nhập kho</option>
+      <option value="export">➖ Xuất kho</option>
+    </select>
+    <button type="submit">✔️ Thực hiện</button>
+  </form>
+
+  <hr />
+  <h2>📦 Lịch sử kho</h2>
+  <table border="1" id="inventoryTable">
+    <thead>
+      <tr>
+        <th>SKU</th>
+        <th>Số lượng</th>
+        <th>Loại</th>
+        <th>Thời gian</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script src="js/inventory.js"></script>
+</body>
+</html>
