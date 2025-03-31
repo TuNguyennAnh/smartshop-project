@@ -3,10 +3,13 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path");
+const morgan = require("morgan"); // Thêm morgan để log request
 const productRoutes = require('./routes/product.routes');
 const inventoryRoutes = require('./routes/inventory');
 const orderRoutes = require('./routes/order');
 const statsRoutes = require('./routes/stats');
+const userRoutes = require('./routes/user.routes');
+const authRoutes = require('./routes/auth.routes');
 
 dotenv.config();
 
@@ -16,22 +19,37 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(morgan("dev")); // Log request
 app.use(express.static(path.join(__dirname, "../public")));
+
+// Routes
 app.use('/api/products', productRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/stats', statsRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/auth", authRoutes);
 
 // MongoDB
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => console.log("✅ Kết nối MongoDB thành công"))
-  .catch(err => console.error("❌ MongoDB error:", err));
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log("✅ Kết nối MongoDB thành công");
+  } catch (err) {
+    console.error("❌ MongoDB error:", err);
+    process.exit(1); // Thoát nếu không kết nối được
+  }
+};
+connectDB();
 
-// Routes
-app.use("/api/users", require("./routes/user.routes"));
-app.use("/api/auth", require("./routes/auth.routes")); // file tiếp theo sẽ có
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: "Đã xảy ra lỗi trên server" });
+});
 
 // Khởi động server
 app.listen(PORT, () => {
