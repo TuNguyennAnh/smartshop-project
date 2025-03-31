@@ -6,22 +6,14 @@ const shopSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    unique: true,
+    trim: true,
   },
 
   owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User", // Chủ shop chính
-    required: true,
-  },
-
-  address: {
-    type: String,
-    default: "",
-  },
-
-  phone: {
-    type: String,
-    default: "",
+    ref: "User",
+    required: true, // mỗi shop phải có 1 chủ
   },
 
   createdAt: {
