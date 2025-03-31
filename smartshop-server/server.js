@@ -1,33 +1,31 @@
 const express = require("express");
-const cors = require("cors");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-
-const authRoutes = require("./routes/auth");
-const userRoutes = require("./routes/user.routes");
-const dashboardRoutes = require("./routes/dashboard");
+const cors = require("cors");
+const path = require("path");
 
 dotenv.config();
+
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "../public")));
+
+// MongoDB
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => console.log("✅ Kết nối MongoDB thành công"))
+  .catch(err => console.error("❌ MongoDB error:", err));
 
 // Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/users", require("./routes/user.routes"));
+app.use("/api/auth", require("./routes/auth.routes")); // file tiếp theo sẽ có
 
-// DB Connection
-mongoose.connect(process.env.MONGO_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => {
-  console.log("✅ MongoDB connected!");
-  app.listen(PORT, () => console.log(`🚀 Server is running on port ${PORT}`));
-}).catch((err) => {
-  console.error("❌ MongoDB connection failed:", err);
+// Khởi động server
+app.listen(PORT, () => {
+  console.log(`🚀 Server đang chạy tại http://localhost:${PORT}`);
 });

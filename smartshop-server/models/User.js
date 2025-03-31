@@ -1,24 +1,20 @@
-// models/User.js
+const mongoose = require("mongoose");
 
-const mongoose = require('mongoose');
-
-const userSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
     unique: true,
-    minlength: 3
   },
   password: {
     type: String,
     required: true,
-    minlength: 6
   },
   role: {
     type: String,
-    enum: ['user', 'admin'],
-    default: 'user' // ✅ người dùng đăng ký sẽ mặc định là user
+    enum: ["user", "admin"],
+    default: "user",
   }
-});
+}, { timestamps: true });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model("User", UserSchema);
