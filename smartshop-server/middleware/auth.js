@@ -2,7 +2,6 @@ const jwt = require("jsonwebtoken");
 
 function authenticate(req, res, next) {
   try {
-    // Lấy token từ header Authorization
     const authHeader = req.headers["authorization"];
     if (!authHeader) {
       return res.status(401).json({ message: "Authorization header không tồn tại" });
@@ -13,7 +12,6 @@ function authenticate(req, res, next) {
       return res.status(401).json({ message: "Token không tồn tại" });
     }
 
-    // Xác thực token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded; // Gắn thông tin user vào request
     next();
@@ -21,7 +19,7 @@ function authenticate(req, res, next) {
     if (err.name === "TokenExpiredError") {
       return res.status(401).json({ message: "Token đã hết hạn" });
     }
-    res.status(403).json({ message: "Token không hợp lệ" });
+    res.status(401).json({ message: "Token không hợp lệ", error: err.message });
   }
 }
 

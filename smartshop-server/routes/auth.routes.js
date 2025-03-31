@@ -1,11 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { register, login } = require("../controllers/auth.controller");
+const validateRegister = require("../middleware/validateRegister"); // Import middleware
+const { register } = require("../controllers/auth.controller"); // Import controller
 
-// Đăng ký tài khoản mới (mặc định là chủ shop, sẽ tự sinh shop riêng)
+// API đăng ký
 router.post("/register", validateRegister, register);
-
-// Đăng nhập
-router.post("/login", validateLogin, login);
 
 module.exports = router;
