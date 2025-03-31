@@ -91,46 +91,39 @@
       }
 
       try {
-        const res = await fetch("https://smartshop-project.onrender.com/api/auth/login", {
+        const res = await fetch("http://localhost:5000/api/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, password })
         });
 
         const data = await res.json();
+
         if (!res.ok) {
-          msg.textContent = data.message || data.msg || "Đăng nhập thất bại.";
+          msg.textContent = data.msg || "Đăng nhập thất bại.";
           msg.style.color = "red";
           return;
         }
 
         localStorage.setItem("token", data.token);
-
-        const userRes = await fetch("https://smartshop-project.onrender.com/api/users/me", {
-          headers: { Authorization: "Bearer " + data.token }
-        });
-
-        const userData = await userRes.json();
-
-        if (!userRes.ok || !userData.role) {
-          msg.textContent = "Không xác định được vai trò người dùng.";
-          msg.style.color = "red";
-          return;
-        }
-
         msg.textContent = "✅ Đăng nhập thành công!";
         msg.style.color = "green";
 
-        setTimeout(() => {
-          if (userData.role === "admin") {
-            window.location.href = "manage-users.html";
-          } else if (userData.role === "employee") {
-            window.location.href = "employee-dashboard.html";
-          } else {
-            window.location.href = "dashboard.html";
+        // Lấy role để chuyển trang
+        const userRes = await fetch("http://localhost:5000/api/users/me", {
+          headers: {
+            Authorization: "Bearer " + data.token
           }
-        }, 1000);
-      } catch (err) {
+        });
+        const userData = await userRes.json();
+
+        if (userData.role === "admin") {
+          window.location.href = "manage-users.html";
+        } else {
+          window.location.href = "dashboard.html";
+        }
+      } catch (error) {
+        console.error("Lỗi:", error);
         msg.textContent = "Lỗi kết nối đến máy chủ.";
         msg.style.color = "red";
       }

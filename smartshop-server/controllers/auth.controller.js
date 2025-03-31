@@ -38,23 +38,45 @@ const login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const user = await User.findOne({ username });
-    if (!user) return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    // Tìm user và populate thông tin shop
+    const user = await User.findOne({ username }).populate('shop');
+    if (!user) {
+      return res.status(404).json({ message: "Tài khoản không tồn tại" });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ message: "Mật khẩu không đúng" });
+    if (!isMatch) {
+      return res.status(401).json({ message: "Sai mật khẩu" });
+    }
 
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: "3d",
-    });
+    // Tạo token với thêm thông tin shop
+    const token = jwt.sign(
+      { 
+        id: user._id, 
+        role: user.role,
+        shop: user.shop?._id // Thêm ID của shop vào token
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" } // Giảm thời gian hết hạn xuống 1 ngày
+    );
 
+    // Trả về thêm thông tin shop
     res.json({
       message: "Đăng nhập thành công",
       token,
-      role: user.role,
+      user: {
+        id: user._id,
+        username: user.username,
+        role: user.role,
+        shop: user.shop // Trả về thông tin shop đầy đủ
+      }
     });
   } catch (err) {
-    res.status(500).json({ message: "Lỗi server khi đăng nhập", error: err.message });
+    console.error("Lỗi đăng nhập:", err.message);
+    res.status(500).json({ 
+      message: "Lỗi server khi đăng nhập", 
+      error: err.message 
+    });
   }
 };
 
