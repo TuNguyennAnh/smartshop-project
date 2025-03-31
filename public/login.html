@@ -110,7 +110,7 @@
         msg.style.color = "green";
 
         // Lấy role để chuyển trang
-        const userRes = await fetch("https://smartshop-server.onrender.com/api/auth/login", {
+        const userRes = await fetch("https://smartshop-server.onrender.com/api/users/me", {
           headers: {
             Authorization: "Bearer " + data.token
           }
