@@ -1,43 +1,66 @@
-const token = localStorage.getItem("token");
+const token = localStorage.getItem('token');
+if (!token) {
+  alert('Bạn chưa đăng nhập!');
+  window.location.href = 'login.html';
+}
 
-document.addEventListener("DOMContentLoaded", () => {
-  fetch("/api/products", {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
+const form = document.getElementById('product-form');
+const productList = document.getElementById('product-list');
+
+const API_URL = 'https://<YOUR_BACKEND_RENDER_URL>/api/products';
+
+function fetchProducts() {
+  fetch(API_URL, {
+    headers: { Authorization: `Bearer ${token}` },
   })
     .then(res => res.json())
     .then(data => {
-      const list = document.getElementById("productList");
-      data.products.forEach(p => {
-        const li = document.createElement("li");
-        li.textContent = `${p.name} - ${p.price}đ - Còn: ${p.stock}`;
-        list.appendChild(li);
+      productList.innerHTML = '';
+      data.forEach(p => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <strong>${p.name}</strong> - ${p.price}đ - SL: ${p.quantity}
+          <button onclick="deleteProduct('${p._id}')">🗑️ Xóa</button>
+        `;
+        productList.appendChild(li);
       });
-    })
-    .catch(err => {
-      console.error(err);
-      alert("Lỗi tải sản phẩm");
     });
+}
 
-  const form = document.getElementById("createProductForm");
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const name = document.getElementById("name").value.trim();
-    const price = parseFloat(document.getElementById("price").value);
-    const stock = parseInt(document.getElementById("stock").value);
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const product = {
+    name: form.name.value,
+    price: form.price.value,
+    quantity: form.quantity.value,
+    category: form.category.value,
+    image: form.image.value,
+    description: form.description.value,
+  };
 
-    const res = await fetch("/api/products", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({ name, price, stock })
+  fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(product),
+  })
+    .then(res => res.json())
+    .then(() => {
+      form.reset();
+      fetchProducts();
     });
-
-    const result = await res.json();
-    document.getElementById("status").textContent = result.message || "Xong!";
-    if (res.ok) location.reload();
-  });
 });
+
+function deleteProduct(id) {
+  if (!confirm('Xác nhận xoá sản phẩm?')) return;
+  fetch(`${API_URL}/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+    .then(res => res.json())
+    .then(() => fetchProducts());
+}
+
+fetchProducts();

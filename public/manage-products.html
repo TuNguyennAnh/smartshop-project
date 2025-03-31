@@ -7,24 +7,23 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <h1>Quản lý sản phẩm</h1>
+  <h1>🛒 Quản lý Sản phẩm</h1>
 
   <section>
-    <h2>Danh sách sản phẩm</h2>
-    <ul id="productList"></ul>
-  </section>
-
-  <hr />
-
-  <section>
-    <h2>Thêm sản phẩm mới</h2>
-    <form id="createProductForm">
+    <form id="product-form">
       <input type="text" id="name" placeholder="Tên sản phẩm" required />
       <input type="number" id="price" placeholder="Giá" required />
-      <input type="number" id="stock" placeholder="Tồn kho" required />
-      <button type="submit">Thêm</button>
+      <input type="number" id="quantity" placeholder="Số lượng" required />
+      <input type="text" id="category" placeholder="Danh mục" />
+      <input type="text" id="image" placeholder="Link ảnh (tùy chọn)" />
+      <textarea id="description" placeholder="Mô tả (tuỳ chọn)"></textarea>
+      <button type="submit">➕ Thêm sản phẩm</button>
     </form>
-    <p id="status"></p>
+  </section>
+
+  <section>
+    <h2>📦 Danh sách sản phẩm</h2>
+    <ul id="product-list"></ul>
   </section>
 
   <script src="manage-products.js"></script>
