@@ -1,28 +1,33 @@
 const express = require("express");
+const cors = require("cors");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-const cors = require("cors");
+
 const authRoutes = require("./routes/auth");
-const dashboardRoutes = require('./routes/dashboard');
-const userRoutes = require("./routes/user.routes"); // ✅ Chỉ khai báo 1 lần
+const userRoutes = require("./routes/user.routes");
+const dashboardRoutes = require("./routes/dashboard");
 
 dotenv.config();
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-app.use(cors({ origin: "*" }));
+// Middleware
+app.use(cors());
 app.use(express.json());
+app.use(express.static("public"));
 
-// ✅ Gắn các route
+// Routes
 app.use("/api/auth", authRoutes);
-app.use('/api/users', userRoutes); // ⚠️ KHÔNG khai báo lại ở dưới nữa
-app.use('/api/dashboard', dashboardRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
-// ✅ Kết nối MongoDB
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.error("MongoDB error:", err));
-
-app.get("/", (req, res) => res.send("SmartShop API is running"));
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// DB Connection
+mongoose.connect(process.env.MONGO_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(() => {
+  console.log("✅ MongoDB connected!");
+  app.listen(PORT, () => console.log(`🚀 Server is running on port ${PORT}`));
+}).catch((err) => {
+  console.error("❌ MongoDB connection failed:", err);
+});
