@@ -17,17 +17,17 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// CORS Config
+// CORS cấu hình đúng chuẩn
 const corsOptions = {
   origin: "https://smartshop-frontend.onrender.com",
   methods: "GET,POST,PUT,DELETE,PATCH,OPTIONS",
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 };
-
+app.use(cors(corsOptions));
 app.options("*", cors(corsOptions)); // Cho phép preflight
-app.use(cors(corsOptions));          // Dùng middleware chính
 
+// Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../public")));
 
@@ -39,12 +39,12 @@ app.use('/api/stats', statsRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 
-// Nếu không khớp route nào
+// Route fallback 404
 app.use((req, res) => {
   res.status(404).json({ message: "Route không tồn tại!" });
 });
 
-// MongoDB Connection
+// MongoDB
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI, {
@@ -59,13 +59,13 @@ const connectDB = async () => {
 };
 connectDB();
 
-// Error handler
+// Error handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: "Đã xảy ra lỗi trên server" });
 });
 
-// Start
+// Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server đang chạy tại http://localhost:${PORT}`);
 });
