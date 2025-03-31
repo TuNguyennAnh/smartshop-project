@@ -1,4 +1,4 @@
-const Inventory = require('../models/inventory');
+const Inventory = require('../models/Inventory');
 
 // POST: thêm lịch sử kho
 exports.createInventory = async (req, res) => {
