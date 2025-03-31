@@ -5,6 +5,7 @@ const cors = require("cors");
 const path = require("path");
 const productRoutes = require('./routes/product.routes');
 const inventoryRoutes = require('./routes/inventory');
+const orderRoutes = require('./routes/order');
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "../public")));
 app.use('/api/products', productRoutes);
 app.use('/api/inventory', inventoryRoutes);
+app.use('/api/orders', orderRoutes);
 
 // MongoDB
 mongoose.connect(process.env.MONGO_URI, {
