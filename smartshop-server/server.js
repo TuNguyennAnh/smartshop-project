@@ -17,19 +17,12 @@ dotenv.config();
 // CORS cấu hình đúng chuẩn
 const corsOptions = {
   origin: "https://smartshop-frontend.onrender.com",
-  methods: "GET,POST,PUT,DELETE,PATCH,OPTIONS",
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-};
-
-const app = express();
-app.use(cors({
-  origin: "https://smartshop-frontend.onrender.com",
   credentials: true
-}));
+};
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions)); // Cho phép preflight
-
 const PORT = process.env.PORT || 5000;
 
 // Middleware
