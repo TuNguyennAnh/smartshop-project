@@ -9,7 +9,7 @@ const inventoryRoutes = require('./routes/inventory');
 const orderRoutes = require('./routes/order');
 const statsRoutes = require('./routes/stats');
 const userRoutes = require('./routes/user.routes');
-const authRoutes = require('./routes/auth.routes');
+const authRoutes = require("./routes/auth.routes");
 
 // Load env variables
 dotenv.config();
