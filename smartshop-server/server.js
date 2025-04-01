@@ -23,6 +23,10 @@ const corsOptions = {
 };
 
 const app = express();
+app.use(cors({
+  origin: "https://smartshop-frontend.onrender.com",
+  credentials: true
+}));
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions)); // Cho phép preflight
 
